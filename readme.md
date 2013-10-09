@@ -1,7 +1,11 @@
 ## markov chains in neo4j
-people have shown interest in doing some markov chain stuff in neo4j. here's an example unmanaged extension for some markov operations.
+an example unmanaged extension for some markov chain operations.
 
 ### usage example:
+/markov/chains returns an array of all paths up to a length (node ids), and their probability
+/markov/results returns an array of start/end node ids, and their probability (sum of all paths)
+
+You give them a cypher statement to get the start nodes, and a length.
 
 #### graph looks like this:
 ```
@@ -15,8 +19,64 @@ CREATE (Rain {name:'Rain'}), (NoRain {name:'NoRain'}),
 #### curl output:
 ``` shell
 $ curl -X POST -H Content-Type:application/json \
-  -d '{"lookup":"MATCH n WHERE n.name={lookup} RETURN n", "start":"Rain", "length":4}' \
+  -d '{"lookup":"MATCH n WHERE n.name in [\"Rain\", \"NoRain\"] RETURN n", "length":4}' \
    http://localhost:7474/markov/chains
+[{"path":[1,2,1,2,1],"prob":0.0144},
+ {"path":[1,2,1,2,2],"prob":0.0336},
+ {"path":[1,2,1,1,2],"prob":0.0288},
+ {"path":[1,2,1,1,1],"prob":0.043199999999999995},
+ {"path":[1,2,2,1,2],"prob":0.0336},
+ {"path":[1,2,2,1,1],"prob":0.05039999999999999},
+ {"path":[1,2,2,2,1],"prob":0.05879999999999999},
+ {"path":[1,2,2,2,2],"prob":0.1372},
+ {"path":[1,1,2,1,2],"prob":0.0288},
+ {"path":[1,1,2,1,1],"prob":0.043199999999999995},
+ {"path":[1,1,2,2,1],"prob":0.05039999999999999},
+ {"path":[1,1,2,2,2],"prob":0.11759999999999998},
+ {"path":[1,1,1,2,1],"prob":0.043199999999999995},
+ {"path":[1,1,1,2,2],"prob":0.10079999999999999},
+ {"path":[1,1,1,1,2],"prob":0.0864},
+ {"path":[1,1,1,1,1],"prob":0.1296},
+ {"path":[2,1,2,1,2],"prob":0.0144},
+ {"path":[2,1,2,1,1],"prob":0.021599999999999998},
+ {"path":[2,1,2,2,1],"prob":0.025199999999999997},
+ {"path":[2,1,2,2,2],"prob":0.05879999999999999},
+ {"path":[2,1,1,2,1],"prob":0.021599999999999998},
+ {"path":[2,1,1,2,2],"prob":0.05039999999999999},
+ {"path":[2,1,1,1,2],"prob":0.0432},
+ {"path":[2,1,1,1,1],"prob":0.0648},
+ {"path":[2,2,1,2,1],"prob":0.0252},
+ {"path":[2,2,1,2,2],"prob":0.0588},
+ {"path":[2,2,1,1,2],"prob":0.0504},
+ {"path":[2,2,1,1,1],"prob":0.0756},
+ {"path":[2,2,2,1,2],"prob":0.05879999999999999},
+ {"path":[2,2,2,1,1],"prob":0.08819999999999997},
+ {"path":[2,2,2,2,1],"prob":0.10289999999999998},
+ {"path":[2,2,2,2,2],"prob":0.24009999999999992}]
+
+$ curl -X POST -H Content-Type:application/json \
+  -d '{"lookup":"MATCH n WHERE n.name in [\"Rain\", \"NoRain\"] RETURN n", "length":4}' \
+   http://localhost:7474/markov/results
+[{"start":2,"end":1,"prob":0.4250999999999999},
+ {"start":2,"end":2,"prob":0.5749},
+ {"start":1,"end":1,"prob":0.4332},
+ {"start":1,"end":2,"prob":0.5668}]
+
+$ curl -X POST -H Content-Type:application/json \
+  -d '{"lookup":"MATCH n WHERE n.name in [\"Rain\", \"NoRain\"] RETURN n", "length":1}' \
+   http://localhost:7474/markov/results
+[{"start":2,"end":1,"prob":0.3},
+ {"start":2,"end":2,"prob":0.7}
+ {"start":1,"end":1,"prob":0.6},
+ {"start":1,"end":2,"prob":0.4}]
+ 
+$ curl -X POST -H Content-Type:application/json \
+  -d '{"lookup":"MATCH n WHERE n.name in [\"Rain\", \"NoRain\"] RETURN n", "length":20}' \
+   http://localhost:7474/markov/results
+[{"start":2,"end":1,"prob":0.42857142855615876},
+ {"start":2,"end":2,"prob":0.5714285714436717},
+ {"start":1,"end":1,"prob":0.4285714285910035},
+ {"start":1,"end":2,"prob":0.571428571407668}]
 ```
 
 ### configuration
