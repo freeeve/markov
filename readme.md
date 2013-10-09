@@ -2,8 +2,8 @@
 an example unmanaged extension for some markov chain operations.
 
 ### usage example:
-/markov/chains returns an array of all paths up to a length (node ids), and their probability
-/markov/results returns an array of start/end node ids, and their probability (sum of all paths)
+`/markov/chains` returns an array of all paths up to a length (node ids), and their probability  
+`/markov/results` returns an array of start/end node ids, and their probability (sum of all paths)
 
 You give them a cypher statement to get the start nodes, and a length.
 
