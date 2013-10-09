@@ -15,8 +15,8 @@ CREATE (Rain {name:'Rain'}), (NoRain {name:'NoRain'}),
 #### curl output:
 ``` shell
 $ curl -X POST -H Content-Type:application/json \
-  -d '{"lookup":"MATCH n WHERE n.name={lookup} RETURN id(n)", "start":"Rain", "end":"NoRain", "length":4}' \
-   http://localhost:7474/markov
+  -d '{"lookup":"MATCH n WHERE n.name={lookup} RETURN n", "start":"Rain", "length":4}' \
+   http://localhost:7474/markov/chains
 ```
 
 ### configuration
